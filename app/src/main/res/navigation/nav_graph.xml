@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.ademo.ui.home.HomeFragment"
+        android:label="@string/home_title"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_nav_player"
+            app:destination="@id/nav_player_graph" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_slushe"
+            app:destination="@id/nav_slushe_graph" />
+    </fragment>
+
+    <navigation
+        android:id="@+id/nav_slushe_graph"
+        app:startDestination="@id/nav_slushe">
+        <fragment
+            android:id="@+id/nav_slushe"
+            android:name="com.example.ademo.ui.slushe.list.SlusheListFragment"
+            android:label="@string/slushe_title"
+            tools:layout="@layout/fragment_slushe_list">
+            <action
+                android:id="@+id/action_nav_slushe_to_slusheDetailFragment"
+                app:destination="@id/slusheDetailFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/slusheDetailFragment"
+            android:name="com.example.ademo.ui.slushe.detail.SlusheDetailFragment"
+            android:label="SlusheDetailFragment"
+            tools:layout="@layout/fragment_slushe_detailed">
+            <argument
+                android:name="pageItem"
+                app:argType="com.example.ademo.utils.PageItem" />
+        </fragment>
+    </navigation>
+
+    <navigation
+        android:id="@+id/nav_player_graph"
+        app:startDestination="@id/nav_player_main">
+        <fragment
+            android:id="@+id/playerVideoFragment"
+            android:name="com.example.ademo.ui.player.PlayerVideoFragment"
+            android:label="PlayerVideoFragment"
+            tools:layout="@layout/fragment_player" />
+        <fragment
+            android:id="@+id/nav_player_main"
+            android:name="com.example.ademo.ui.player.PlayerMainFragment"
+            android:label="@string/player_title"
+            tools:layout="@layout/fragment_player_main">
+            <action
+                android:id="@+id/action_nav_player_main_to_playerVideoFragment"
+                app:destination="@id/playerVideoFragment" />
+        </fragment>
+    </navigation>
+</navigation>

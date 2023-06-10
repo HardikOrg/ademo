@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">ADemo</string>
+
+    <string name="home_string">Use left drawer to navigate</string>
+
+    <string name="home_title">Home</string>
+    <string name="player_title">Player Example</string>
+    <string name="slushe_title">Slushe Example</string>
+
+    <string name="sort_featured">Featured</string>
+    <string name="sort_recent">Most Recent</string>
+    <string name="sort_likes">Most Likes</string>
+    <string name="sort_views">Most Viewed</string>
+    <string name="sort_discussed">Most Discussed</string>
+    <string name="sort_posts">List Posts</string>
+
+    <string-array name="sort_types">
+        <item>@string/sort_featured</item>
+        <item>@string/sort_recent</item>
+        <item>@string/sort_likes</item>
+        <item>@string/sort_views</item>
+        <item>@string/sort_discussed</item>
+        <item>@string/sort_posts</item>
+    </string-array>
+</resources>
