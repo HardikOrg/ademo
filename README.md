@@ -64,7 +64,7 @@ https://videodelivery.net/1ff29dea12984ba98718a5fe922950f2/manifest/video.m3u8
 ```
 Which contain stream URIs. Which can be fed to the ExoPlayer since it supports media streams (hls, dash)
 
-The first time video player is used, it fetches (~1 minute) data from the web, and save it to the file, so it doesn't need to fetch it again afterwards
+**The first time video player is used, it gradually fetches (~1-2 minutes) data from the web, and after that it saves them to the file (20 videos), so it doesn't need to fetch it again afterwards**
 
 In the Content tab, videos can be added to the playlist. In Playlist tab, they can be removed. Play button starts player with data from the playlist
 
