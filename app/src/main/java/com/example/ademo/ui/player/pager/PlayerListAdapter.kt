@@ -25,10 +25,10 @@ class PlayerListAdapter(val states: Pair<Int, Int>) :
             .into(binding.image)
 
         binding.imageButton.apply {
-            setImageResource(states.first)
+            setImageResource(if (item.isLiked) states.second else states.first)
             setOnClickListener {
-                setImageResource(states.second)
                 onClick?.invoke(item, id)
+                setImageResource(if (item.isLiked) states.second else states.first)
             }
         }
     }

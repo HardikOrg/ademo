@@ -22,6 +22,7 @@ data class PageItem(
 
 sealed class PlayerItem {
     abstract val preview: String
+    var isLiked: Boolean = false
 }
 
 data class PlayerVideo(

@@ -34,14 +34,16 @@ class PlayerMainFragment :
             tab.text = names[position]
         }.attach()
 
-        val file = File(requireContext().filesDir, Settings.fetchedDataFilename)
-        if (file.exists()) {
-            Log.d("PlayerMain", "Data file exists")
-            Log.d("PlayerMain", file.readText())
-            viewModel.getDataFromFile(file)
-        } else {
-            Log.d("PlayerMain", "Data file does not exist")
-            viewModel.fetchAndSaveData(file)
+        if (viewModel.listContent.value!!.isEmpty()) {
+            val file = File(requireContext().filesDir, Settings.fetchedDataFilename)
+            if (file.exists()) {
+                Log.d("PlayerMain", "Data file exists")
+                Log.d("PlayerMain", file.readText())
+                viewModel.getDataFromFile(file)
+            } else {
+                Log.d("PlayerMain", "Data file does not exist")
+                viewModel.fetchAndSaveData(file)
+            }
         }
 
         binding.playButton.apply {

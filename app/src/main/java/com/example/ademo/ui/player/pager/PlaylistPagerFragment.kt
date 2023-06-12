@@ -17,16 +17,16 @@ class PlaylistPagerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val listAdapter =
+            PlayerListAdapter(Pair(R.drawable.icon_remove, R.drawable.icon_remove)).apply {
+                onClick = viewModel.removeClick
+            }
+
         binding.playlistRecycler.apply {
             layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
-            adapter =
-                PlayerListAdapter(Pair(R.drawable.icon_remove, R.drawable.icon_remove)).apply {
-                    onClick = viewModel.removeClick
-                }
+            adapter = listAdapter
         }
 
-        viewModel.playlist.observe(viewLifecycleOwner) {
-            (binding.playlistRecycler.adapter as PlayerListAdapter).setData(it)
-        }
+        viewModel.playlist.observe(viewLifecycleOwner) { listAdapter.setData(it) }
     }
 }

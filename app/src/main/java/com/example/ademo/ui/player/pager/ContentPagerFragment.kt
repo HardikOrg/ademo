@@ -17,15 +17,16 @@ class ContentPagerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.contentRecycler.apply {
-            layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
-            adapter = PlayerListAdapter(Pair(R.drawable.icon_add, R.drawable.icon_add)).apply {
+        val listAdapter =
+            PlayerListAdapter(Pair(R.drawable.icon_add, R.drawable.icon_add_check)).apply {
                 onClick = viewModel.addClick
             }
+
+        binding.contentRecycler.apply {
+            layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
+            adapter = listAdapter
         }
 
-        viewModel.listContent.observe(viewLifecycleOwner) {
-            (binding.contentRecycler.adapter as PlayerListAdapter).setData(it)
-        }
+        viewModel.listContent.observe(viewLifecycleOwner) { listAdapter.setData(it) }
     }
 }

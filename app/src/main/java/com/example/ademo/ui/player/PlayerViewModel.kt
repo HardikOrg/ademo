@@ -31,16 +31,26 @@ class PlayerViewModel : ViewModel() {
     val playlist: LiveData<List<PlayerItem>> = _playlist
 
     val addClick = { _: PlayerItem, id: Int ->
-        val a = _listContent.value!![id]
-        if (!_playlist.value!!.contains(a)) {
-            _playlist.value = _playlist.value!! + a
+        _listContent.value = _listContent.value!!.also {
+            // update
+            it[id].isLiked = true
+
+            val item = it[id]
+            if (!_playlist.value!!.contains(item)) {
+                _playlist.value = _playlist.value!! + item
+            }
         }
     }
 
     val removeClick = { _: PlayerItem, id: Int ->
         val new = _playlist.value!!.toMutableList()
-        new.removeAt(id)
+        val item = new.removeAt(id)
         _playlist.value = new
+
+        val index = _listContent.value!!.indexOf(item)
+        _listContent.value = _listContent.value!!.also {
+             it[index].isLiked = false
+        }
     }
 
     fun getVideosFromPlaylist() = _playlist.value!!.filterIsInstance<PlayerVideo>()
