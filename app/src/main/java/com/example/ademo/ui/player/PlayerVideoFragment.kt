@@ -31,26 +31,10 @@ class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBi
         player.setMediaItems(playlist)
         player.prepare()
 
-        var currentIndex = player.currentMediaItemIndex
-
         player.addListener(object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 val cur = player.currentMediaItemIndex
-
-                binding.queue.layoutManager?.apply {
-                    findViewByPosition(currentIndex)?.let {
-                        val vb = PlayerItemBinding.bind(it)
-                        vb.playButton.visibility = View.INVISIBLE
-                    }
-                    findViewByPosition(cur)?.let {
-                        val vb = PlayerItemBinding.bind(it)
-                        vb.playButton.visibility = View.VISIBLE
-                    }
-                }
-                (binding.queue.adapter as QueueAdapter).apply {
-                    updateElements()
-                }
-                currentIndex = cur
+                (binding.queue.adapter as QueueAdapter).setCurrentPlaying(cur)
             }
         })
 
@@ -58,13 +42,6 @@ class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBi
             layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
             adapter = QueueAdapter().apply { setData(previews) }
         }
-
-//        binding.queue.doOnNextLayout {
-//            binding.queue.getChildAt(0)?.apply {
-//                PlayerItemBinding.bind(this).playButton.visibility = View.VISIBLE
-//            }
-//            (binding.queue.adapter as QueueAdapter).updateElements()
-//        }
     }
 
     override fun onStop() {
@@ -74,7 +51,7 @@ class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBi
 
     inner class QueueAdapter :
         BaseRecyclerAdapter<String, PlayerItemBinding>(PlayerItemBinding::inflate) {
-
+        private var current = 0
         override fun bind(binding: PlayerItemBinding, item: String, id: Int) {
             super.bind(binding, item, id)
             val placeholder = CircularProgressDrawable(binding.root.context).apply {
@@ -90,11 +67,13 @@ class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBi
                 .centerCrop()
                 .into(binding.image)
 
-            binding.imageButton.visibility = View.GONE
             binding.imageForegorund.visibility = View.GONE
+            binding.imageButton.visibility = View.GONE
+            binding.playButton.visibility = if (id == current) View.VISIBLE else View.GONE
         }
 
-        fun updateElements() {
+        fun setCurrentPlaying(id: Int) {
+            current = id
             notifyDataSetChanged()
         }
     }

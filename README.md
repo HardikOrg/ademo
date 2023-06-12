@@ -68,7 +68,7 @@ The first time video player is used, it fetches (~1 minute) data from the web, a
 
 In the Content tab, videos can be added to the playlist. In Playlist tab, they can be removed. Play button starts player with data from the playlist
 
-Repeat modes, seek, skip and settings are basic ExoPlayer capabilities. Displaying current playing video in the queue is kinda buggy, sorry 🙂
+Repeat modes, seek, skip and settings are basic ExoPlayer capabilities
 
 <p float="left">
   <img src="/.github/4.png" width="200" />
