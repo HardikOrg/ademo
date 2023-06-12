@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.ademo.R
 import com.example.ademo.databinding.FragmentPagerPlaylistBinding
 import com.example.ademo.ui.base.BaseFragment
-import com.example.ademo.ui.player.PlayerListAdapter
 import com.example.ademo.ui.player.PlayerViewModel
 import com.example.ademo.utils.Settings
 
@@ -20,10 +19,10 @@ class PlaylistPagerFragment :
 
         binding.playlistRecycler.apply {
             layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
-            adapter = PlayerListAdapter(
-                Pair(R.drawable.icon_remove, R.drawable.icon_remove),
-                viewModel.removeClick,
-            )
+            adapter =
+                PlayerListAdapter(Pair(R.drawable.icon_remove, R.drawable.icon_remove)).apply {
+                    onClick = viewModel.removeClick
+                }
         }
 
         viewModel.playlist.observe(viewLifecycleOwner) {

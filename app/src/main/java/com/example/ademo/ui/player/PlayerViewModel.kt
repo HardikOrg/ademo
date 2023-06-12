@@ -30,14 +30,14 @@ class PlayerViewModel : ViewModel() {
     }
     val playlist: LiveData<List<PlayerItem>> = _playlist
 
-    val addClick = { id: Int ->
+    val addClick = { _: PlayerItem, id: Int ->
         val a = _listContent.value!![id]
         if (!_playlist.value!!.contains(a)) {
             _playlist.value = _playlist.value!! + a
         }
     }
 
-    val removeClick = { id: Int ->
+    val removeClick = { _: PlayerItem, id: Int ->
         val new = _playlist.value!!.toMutableList()
         new.removeAt(id)
         _playlist.value = new

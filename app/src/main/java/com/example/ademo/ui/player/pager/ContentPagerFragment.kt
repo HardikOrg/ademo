@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.ademo.R
 import com.example.ademo.databinding.FragmentPagerContentBinding
 import com.example.ademo.ui.base.BaseFragment
-import com.example.ademo.ui.player.PlayerListAdapter
 import com.example.ademo.ui.player.PlayerViewModel
 import com.example.ademo.utils.Settings
 
@@ -20,10 +19,9 @@ class ContentPagerFragment :
 
         binding.contentRecycler.apply {
             layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
-            adapter = PlayerListAdapter(
-                Pair(R.drawable.icon_add, R.drawable.icon_add),
-                viewModel.addClick,
-            )
+            adapter = PlayerListAdapter(Pair(R.drawable.icon_add, R.drawable.icon_add)).apply {
+                onClick = viewModel.addClick
+            }
         }
 
         viewModel.listContent.observe(viewLifecycleOwner) {

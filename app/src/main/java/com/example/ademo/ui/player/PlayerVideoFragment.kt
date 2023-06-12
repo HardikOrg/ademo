@@ -1,21 +1,19 @@
 package com.example.ademo.ui.player
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.example.ademo.R
 import com.example.ademo.databinding.FragmentPlayerBinding
 import com.example.ademo.databinding.PlayerItemBinding
 import com.example.ademo.ui.base.BaseFragment
+import com.example.ademo.ui.base.BaseRecyclerAdapter
 import com.example.ademo.utils.Settings
 
 class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBinding::inflate) {
@@ -74,45 +72,26 @@ class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBi
         binding.playerView.player?.release()
     }
 
-    inner class QueueAdapter : RecyclerView.Adapter<QueueAdapter.ViewHolder>() {
-        var dataSet = listOf<String>()
+    inner class QueueAdapter :
+        BaseRecyclerAdapter<String, PlayerItemBinding>(PlayerItemBinding::inflate) {
 
-        inner class ViewHolder(private val binding: PlayerItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: String, id: Int) {
-                val placeholder = CircularProgressDrawable(binding.root.context).apply {
-                    setColorSchemeColors(binding.root.context.resources.getColor(R.color.s_pink))
-                    strokeWidth = 5f
-                    centerRadius = 30f
-                    start()
-                }
-
-                Glide.with(binding.root)
-                    .load(item)
-                    .placeholder(placeholder)
-                    .centerCrop()
-                    .into(binding.image)
-
-                binding.imageButton.visibility = View.GONE
-                binding.imageForegorund.visibility = View.GONE
+        override fun bind(binding: PlayerItemBinding, item: String, id: Int) {
+            super.bind(binding, item, id)
+            val placeholder = CircularProgressDrawable(binding.root.context).apply {
+                setColorSchemeColors(binding.root.context.resources.getColor(R.color.s_pink))
+                strokeWidth = 5f
+                centerRadius = 30f
+                start()
             }
-        }
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-            val binding = PlayerItemBinding.inflate(
-                LayoutInflater.from(viewGroup.context), viewGroup, false
-            )
-            return ViewHolder(binding)
-        }
+            Glide.with(binding.root)
+                .load(item)
+                .placeholder(placeholder)
+                .centerCrop()
+                .into(binding.image)
 
-        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) =
-            viewHolder.bind(dataSet[position], position)
-
-        override fun getItemCount() = dataSet.size
-
-        fun setData(list: List<String>) {
-            dataSet = list
-            notifyDataSetChanged()
+            binding.imageButton.visibility = View.GONE
+            binding.imageForegorund.visibility = View.GONE
         }
 
         fun updateElements() {
