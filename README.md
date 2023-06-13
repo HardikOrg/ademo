@@ -4,7 +4,7 @@ This app was made in a few days. I couldn't find any reference about API, so tha
 For example, it could take up to 16 seconds to fetch all pages from https://slushe.com/featured to https://slushe.com/featured/page11.html. Up to 2 seconds per page on a bad day.
 I pray slow connection is an Html parser library issue (Jsoup)
 
-This app consists ists of two:
+This app consists of two:
 * shushe image viewer/browser-esque
 * video player-esque
 
