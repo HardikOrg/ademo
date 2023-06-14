@@ -33,7 +33,12 @@ class SlusheDetailViewModel : ViewModel() {
             // Refresh™ approved =)
             if (this == null || this.isCompleted) {
                 fetchJob = viewModelScope.launch(CoroutineName("DetailsFetch")) {
-                    _details.value = repository.getDetails(pageItem.srcLink)
+                    val res = repository.getDetails(pageItem.srcLink)
+                    if (res != null) {
+                        _details.value = res!!
+                    } else {
+                        Log.d("DVM", "Can't load detail page")
+                    }
                 }
             }
         }

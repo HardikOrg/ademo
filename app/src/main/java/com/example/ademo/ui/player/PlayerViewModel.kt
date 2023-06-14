@@ -20,14 +20,10 @@ class PlayerViewModel : ViewModel() {
     private val repository = PlayerDataRepository()
     private var fetchJob: Job? = null
 
-    private val _listContent = MutableLiveData<List<PlayerItem>>().apply {
-        value = listOf()
-    }
+    private val _listContent = MutableLiveData<List<PlayerItem>>(listOf())
     val listContent: LiveData<List<PlayerItem>> = _listContent
 
-    private val _playlist = MutableLiveData<List<PlayerItem>>().apply {
-        value = listOf()
-    }
+    private val _playlist = MutableLiveData<List<PlayerItem>>(listOf())
     val playlist: LiveData<List<PlayerItem>> = _playlist
 
     val addClick = { _: PlayerItem, id: Int ->
