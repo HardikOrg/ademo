@@ -6,8 +6,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class SlusheListsRepository {
-    val maxLoadedPage = mutableListOf<Int>().apply {
-        repeat(Settings.sortTypeAmount) { add(1) }
+    private val maxLoadedPage = mutableListOf<Int>().apply {
+        repeat(Settings.sortTypeAmount) { add(0) }
     }
 
     fun resetCounter(type: Int) {
@@ -15,6 +15,7 @@ class SlusheListsRepository {
     }
 
     suspend fun getNextList(type: Int) = withContext(Dispatchers.IO) {
-        SlusheGrabber.getItemsWeb(type, maxLoadedPage[type]++)
+        maxLoadedPage[type]++
+        SlusheGrabber.getItemsWeb(type, maxLoadedPage[type])
     }
 }

@@ -18,7 +18,7 @@ class SlusheListViewModel : ViewModel() {
 
     private var fetchJob: Job? = null
 
-    private val _sortType = MutableLiveData<Int>().apply { value = 0 }
+    private val _sortType = MutableLiveData(0)
     val sortType: LiveData<Int> = _sortType
 
     private val lists = mutableListOf<MutableLiveData<List<PageItem>>>().apply {
@@ -65,8 +65,10 @@ class SlusheListViewModel : ViewModel() {
         with(fetchJob) {
             if (this == null || this.isCompleted) {
                 fetchJob = viewModelScope.launch(CoroutineName("ListFetch")) {
-                    val newList = lists[type].value!! + repository.getNextList(type)
-                    lists[type].postValue(newList)
+                    val list = repository.getNextList(type)
+                    if (list.isNotEmpty()) {
+                        lists[type].value = lists[type].value!! + list
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@ import com.example.ademo.utils.PlayerItem
 import com.example.ademo.utils.PlayerVideo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -53,5 +53,5 @@ class PlayerDataRepository {
     }
 
     fun getWebDataFlow(list: List<String>) =
-        list.asFlow().map { SlusheGrabber.getVideoLinkFromPage(it) }
+        list.asFlow().mapNotNull { SlusheGrabber.getVideoLinkFromPage(it) }
 }
