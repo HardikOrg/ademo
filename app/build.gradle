@@ -69,5 +69,6 @@ dependencies {
         transitive = false
     }
 
+    implementation "com.squareup.okhttp3:okhttp:4.10.0"
     implementation "org.jsoup:jsoup:1.14.3"
 }

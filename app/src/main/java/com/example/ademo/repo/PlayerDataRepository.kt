@@ -45,13 +45,13 @@ class PlayerDataRepository {
     }
 
     suspend fun getImages() = withContext(Dispatchers.IO) {
-        SlusheGrabber.getItemsWeb(0, 1).map { PlayerImage(it.imgLink) }
+        SlusheGrabber.parseMainFromWeb(0, 1).map { PlayerImage(it.imgLink) }
     }
 
     suspend fun getVideosLinks() = withContext(Dispatchers.IO) {
-        SlusheGrabber.getPagesWithVideosList()
+        SlusheGrabber.parseVideoListPage()
     }
 
     fun getWebDataFlow(list: List<String>) =
-        list.asFlow().mapNotNull { SlusheGrabber.getVideoLinkFromPage(it) }
+        list.asFlow().mapNotNull { SlusheGrabber.parseVideoPage(it) }
 }

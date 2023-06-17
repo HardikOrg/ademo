@@ -2,6 +2,11 @@ package com.example.ademo
 
 import com.example.ademo.network.SlusheGrabber
 import com.example.ademo.utils.PageItem
+import com.example.ademo.utils.Settings
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
@@ -21,7 +26,7 @@ class ExampleUnitTest {
         "featured", "most-recent", "most-likes", "most-viewed", "most-discussed", "list-posts"
     )
 
-    private fun executeAndFormat(code: () -> Unit) {
+    inline fun executeAndFormat(code: () -> Unit) {
         println()
         code.invoke()
         println()
@@ -38,7 +43,7 @@ class ExampleUnitTest {
             val file = File(filename)
 
             if (!file.exists()) {
-                val a = SlusheGrabber.getHtmlListPage(0, page)
+                val a = SlusheGrabber.getDocForMain(0, page)
                 file.writeText(a.toString())
             }
         }
@@ -48,7 +53,7 @@ class ExampleUnitTest {
 
             for (page in 1..10) {
                 val time = measureTime {
-                    val res = SlusheGrabber.getItemsLocal("$path$name$page")
+                    SlusheGrabber.parseMainFromLocal("$path$name$page")
                 }
                 println("page $page time:$time")
                 sum += time
@@ -63,7 +68,7 @@ class ExampleUnitTest {
         executeAndFormat {
             var list: List<PageItem>
             val time = measureTime {
-                list = SlusheGrabber.getItemsWeb(0, 1)
+                list = SlusheGrabber.parseMainFromWeb(0, 1)
             }
 
             list.forEach { println(it) }
@@ -79,7 +84,7 @@ class ExampleUnitTest {
             var sum = Duration.ZERO
             for (page in 1..11) {
                 val time = measureTime {
-                    SlusheGrabber.getItemsWeb(0, page)
+                    SlusheGrabber.parseMainFromWeb(0, page)
                 }
                 println("page $page time:$time")
                 sum += time
@@ -92,7 +97,7 @@ class ExampleUnitTest {
     fun checkDetailsGrabber() {
         val src = "https://slushe.com/galleries/ada-wong-179306.html"
 
-        val a = SlusheGrabber.getBaseDetails(src)
+        val a = SlusheGrabber.parsePostDetails(src)
 
         executeAndFormat {
             println(a)
@@ -102,7 +107,7 @@ class ExampleUnitTest {
     @Test
     fun checkVideoPageListGrabber() {
         executeAndFormat {
-            val a = SlusheGrabber.getPagesWithVideosList()
+            val a = SlusheGrabber.parseVideoListPage()
 
             println(a.size)
             a.forEach { println(it) }
@@ -114,7 +119,7 @@ class ExampleUnitTest {
         val url = "https://slushe.com/video/chole-and-kara-testing-179931.html"
 
         executeAndFormat {
-            val a = SlusheGrabber.getVideoLinkFromPage(url)
+            val a = SlusheGrabber.parseVideoPage(url)
             println(a)
         }
     }
@@ -123,7 +128,7 @@ class ExampleUnitTest {
     @Test
     fun checkVideoSGrabber() {
         executeAndFormat {
-            val a = SlusheGrabber.getPagesWithVideosList()
+            val a = SlusheGrabber.parseVideoListPage()
             val b = SlusheGrabber.getVideosLinksFromPage(a.take(4))
 
             b.forEach { println(it) }
@@ -136,6 +141,77 @@ class ExampleUnitTest {
             val a = SlusheGrabber.getImagesLinksFromPage()
 
             a.forEach { println(it) }
+        }
+    }
+
+    @Test
+    fun checkHasAccount() {
+        executeAndFormat {
+            val client = OkHttpClient.Builder()
+//                .addInterceptor(LoggingInterceptor())
+                .build()
+
+            val request = Request.Builder()
+                .url("https://slushe.com")
+                .addHeader("User-Agent", Settings.userAgent)
+                .addHeader("Cookie", "PHPSESSID=2j0bt9lv21h1d91ee0ngva8ss4")
+                .build()
+
+            val response = client.newCall(request).execute()
+
+            response.body?.let {
+                val str = SlusheGrabber.hasAccountString(it.string())
+                println(str)
+            }
+        }
+    }
+
+    @Test
+    fun checkAccountDetails() {
+        val client = OkHttpClient.Builder()
+            .build()
+
+        val request = Request.Builder()
+            .url("https://slushe.com/${Settings.profileLinks[0]}")
+            .addHeader("User-Agent", Settings.userAgent)
+            .addHeader("Cookie", "PHPSESSID=2j0bt9lv21h1d91ee0ngva8ss4")
+            .build()
+
+        val response = client.newCall(request).execute()
+        response.body?.let {
+            val str = SlusheGrabber.getAccountDetails(it.string())
+            println(str)
+        }
+    }
+
+    class LoggingInterceptor : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val request = chain.request()
+
+            println("REQUEST (${request.method} method --> ${request.url})")
+            request.headers.forEach {
+                println(
+                    String.format(
+                        "\t%26s -- %s", it.first, it.second
+                    )
+                )
+            }
+
+            println()
+
+            val response = chain.proceed(request)
+            println("RESPONSE (${response.protocol} protocol)")
+            response.headers.forEach {
+                println(
+                    String.format(
+                        "\t%26s -- %s", it.first, it.second
+                    )
+                )
+            }
+
+            println()
+
+            return response
         }
     }
 }

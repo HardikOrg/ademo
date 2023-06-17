@@ -19,7 +19,7 @@ import java.io.File
 
 class PlayerMainFragment :
     BaseFragment<FragmentPlayerMainBinding>(FragmentPlayerMainBinding::inflate) {
-    private val viewModel by navGraphViewModels<PlayerViewModel>(R.id.nav_player_graph)
+    private val sharedViewModel by navGraphViewModels<PlayerViewModel>(R.id.nav_player_graph)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,15 +34,15 @@ class PlayerMainFragment :
             tab.text = names[position]
         }.attach()
 
-        if (viewModel.listContent.value!!.isEmpty()) {
+        if (sharedViewModel.listContent.value!!.isEmpty()) {
             val file = File(requireContext().filesDir, Settings.fetchedDataFilename)
             if (file.exists()) {
                 Log.d("PlayerMain", "Data file exists")
                 Log.d("PlayerMain", file.readText())
-                viewModel.getDataFromFile(file)
+                sharedViewModel.getDataFromFile(file)
             } else {
                 Log.d("PlayerMain", "Data file does not exist")
-                viewModel.fetchAndSaveData(file)
+                sharedViewModel.fetchAndSaveData(file)
             }
         }
 

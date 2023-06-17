@@ -16,6 +16,6 @@ class SlusheListsRepository {
 
     suspend fun getNextList(type: Int) = withContext(Dispatchers.IO) {
         maxLoadedPage[type]++
-        SlusheGrabber.getItemsWeb(type, maxLoadedPage[type])
+        SlusheGrabber.parseMainFromWeb(type, maxLoadedPage[type])
     }
 }

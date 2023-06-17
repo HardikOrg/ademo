@@ -3,22 +3,32 @@ package com.example.ademo.utils
 import java.io.Serializable
 
 data class BaseDetails(
-    var bigImageSrc: String,
-    var authorImageSrc: String,
-    var title: String,
-    var authorName: String,
-    var authorPosition: String,
-    var tags: List<String>,
-    var stats: List<String>
+    val bigImageSrc: String,
+    val authorImageSrc: String,
+    val title: String,
+    val authorName: String,
+    val authorPosition: String,
+    val tags: List<String>,
+    val stats: List<String>
 ) : Serializable
 
 data class PageItem(
-    var srcLink: String,
-    var imgLink: String,
-    var title: String,
-    var author: String,
-    var authorImgLink: String
+    val srcLink: String,
+    val imgLink: String,
+    val title: String,
+    val author: String,
+    val authorImgLink: String
 ) : Serializable
+
+
+data class Account(
+    val accountLink: String,
+    val imgLink: String,
+    val name: String,
+    val position: String,
+    val email: String
+) : Serializable
+
 
 sealed class PlayerItem {
     abstract val preview: String

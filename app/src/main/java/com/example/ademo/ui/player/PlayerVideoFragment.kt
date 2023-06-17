@@ -17,7 +17,7 @@ import com.example.ademo.ui.base.BaseRecyclerAdapter
 import com.example.ademo.utils.Settings
 
 class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBinding::inflate) {
-    private val viewModel by navGraphViewModels<PlayerViewModel>(R.id.nav_player_graph)
+    private val sharedViewModel by navGraphViewModels<PlayerViewModel>(R.id.nav_player_graph)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -25,7 +25,7 @@ class PlayerVideoFragment : BaseFragment<FragmentPlayerBinding>(FragmentPlayerBi
         val player = ExoPlayer.Builder(requireContext()).build()
         binding.playerView.player = player
 
-        val playlist = viewModel.getPlaylistForPlayer()
+        val playlist = sharedViewModel.getPlaylistForPlayer()
         val previews = playlist.map { it.mediaId }.toMutableList()
 
         player.setMediaItems(playlist)

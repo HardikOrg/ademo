@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ADemo</string>
 
-    <string name="home_string">Use left drawer to navigate</string>
+<!--    <string name="home_string">Use the left drawer to navigate</string>-->
 
     <string name="home_title">Home</string>
     <string name="player_title">Player Example</string>

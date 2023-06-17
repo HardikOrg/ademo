@@ -1,53 +1,76 @@
 package com.example.ademo.network
 
 import android.util.Log
+import com.example.ademo.utils.Account
 import com.example.ademo.utils.BaseDetails
 import com.example.ademo.utils.PageItem
 import com.example.ademo.utils.PlayerImage
 import com.example.ademo.utils.PlayerVideo
+import com.example.ademo.utils.Settings
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import java.io.File
 
 object SlusheGrabber {
-    private const val url = "https://slushe.com"
-    private const val urlForVideos = "https://slushe.com/HentaiVR"
+    fun getDocFromString(string: String) =
+        Jsoup.parse(string)
 
-    private val categories = listOf(
-        "featured", "most-recent", "most-likes", "most-viewed", "most-discussed", "list-posts"
-    )
-
-    private fun getLinkForList(category: Int, page: Int) =
-        "$url/${categories[category]}" + if (page != 1) "/page$page.html" else ""
-
-    fun getHtmlLocalPage(filename: String) =
+    fun getDocFromFile(filename: String) =
         Jsoup.parse(File(filename), "UTF-8")
 
-    fun getHtmlListPage(category: Int = 0, page: Int) =
-        getHtmlPage(getLinkForList(category, page))
-
-    fun getHtmlPage(path: String) =
+    fun getDocFromUrl(url: String) =
         try {
-            Jsoup.connect(path)
+            Jsoup.connect(url)
                 .userAgent("Mozilla")
                 .get()
         } catch (e: Exception) {
-            Log.d("SG", "Can't get the document from $path: $e")
+            Log.d("SG", "Can't get the document from $url: $e")
             null
         }
 
-    fun getItemsLocal(filename: String) =
-        parseListPage(getHtmlLocalPage(filename))
+    fun getDocForMain(category: Int = 0, page: Int) =
+        getDocFromUrl(Settings.getLinkForList(category, page))
 
-    fun getItemsWeb(category: Int, page: Int): List<PageItem> {
-        val document = getHtmlListPage(category, page)
+    fun hasAccountString(string: String) =
+        try {
+            val document = getDocFromString(string)
+            val a = document.getElementsByClass("my-profile-wrapper").select("a")
 
-        return if (document != null) parseListPage(document) else listOf()
+            a.attr("href").isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
+
+    fun getAccountDetails(html: String) =
+        try {
+            val document = getDocFromString(html)
+            val top = document.getElementsByClass("top")
+            val links = top.select("a[href]")
+
+            Account(
+                accountLink = links[0].attr("href"),
+                email = document.select("input[placeholder='Email']")[0].attr("value"),
+                imgLink = links[0].select("img").attr("src"),
+                name = links[1].text(),
+                position = top.select("p").text()
+            )
+        } catch (e: Exception) {
+            Log.d("SG", "getAccountDetails: $e")
+            null
+        }
+
+    fun parseMainFromLocal(filename: String) =
+        parseMainPage(getDocFromFile(filename))
+
+    fun parseMainFromWeb(category: Int, page: Int): List<PageItem> {
+        val document = getDocForMain(category, page)
+
+        return if (document != null) parseMainPage(document) else listOf()
     }
 
-    private fun parseListPage(document: Document): List<PageItem> {
-        return try {
+    private fun parseMainPage(document: Document) =
+        try {
             val section = document.getElementsByClass("items-floating   cf  ")
             val galList = section.select("a[href*=com/galleries]")
 
@@ -55,22 +78,21 @@ object SlusheGrabber {
                 val images = it.select("img")
 
                 PageItem(
-                    it.attr("href"), // post src
-                    images[0].attr("src"), // img src
-                    it.getElementsByClass("title").text(), // title
-                    it.getElementsByClass("author").text(), // author
-                    images[1].attr("src") // author img
+                    srcLink = it.attr("href"), // post src
+                    imgLink = images[0].attr("src"), // img src
+                    title = it.getElementsByClass("title").text(), // title
+                    author = it.getElementsByClass("author").text(), // author
+                    authorImgLink = images[1].attr("src") // author img
                 )
             }
         } catch (e: Exception) {
             Log.e("Grabber", "parseListPage parsing: $e")
             listOf()
         }
-    }
 
-    fun getBaseDetails(link: String): BaseDetails? {
+    fun parsePostDetails(link: String): BaseDetails? {
         return try {
-            val document = getHtmlPage(link) ?: return null
+            val document = getDocFromUrl(link) ?: return null
 
             val authorBox = document.getElementsByClass("box user-info-box")
             val contentDetails = document.getElementsByClass("content-details")
@@ -80,13 +102,13 @@ object SlusheGrabber {
             repeat(4) { stats += statsBox[it * 2 + 1].text() }
 
             BaseDetails(
-                document.getElementsByClass("big-photo").attr("src"),
-                authorBox.select("img[src*=.webp]").attr("src"),
-                contentDetails.select("h1").text(),
-                authorBox.select("h1").text(),
-                authorBox.select("p").text(),
-                document.getElementsByClass("tags-list").map { it.text() },
-                stats
+                bigImageSrc = document.getElementsByClass("big-photo").attr("src"),
+                authorImageSrc = authorBox.select("img[src*=.webp]").attr("src"),
+                title = contentDetails.select("h1").text(),
+                authorName = authorBox.select("h1").text(),
+                authorPosition = authorBox.select("p").text(),
+                tags = document.getElementsByClass("tags-list").map { it.text() },
+                stats = stats
             )
         } catch (e: Exception) {
             Log.e("Grabber", "getBaseDetails parsing: $e")
@@ -94,11 +116,11 @@ object SlusheGrabber {
         }
     }
 
-    fun getPagesWithVideosList(): List<String> {
+    fun parseVideoListPage(): List<String> {
         val videos: Elements
 
         try {
-            val document = getHtmlPage(urlForVideos) ?: return listOf()
+            val document = getDocFromUrl(Settings.videosUrl) ?: return listOf()
 
             val videosDiv = document.getElementsByClass("thumb-holder max-vid-1")
             videos = videosDiv.select("a[href*=video]")
@@ -117,9 +139,9 @@ object SlusheGrabber {
         }
     }
 
-    fun getVideoLinkFromPage(page: String): PlayerVideo? {
+    fun parseVideoPage(page: String): PlayerVideo? {
         return try {
-            val document = getHtmlPage(page) ?: return null
+            val document = getDocFromUrl(page) ?: return null
 
             val video = document.select("video")
             val cloudIdElement = video.prev().prev()
@@ -130,13 +152,16 @@ object SlusheGrabber {
             val srcLineString = Regex("[^/]const source.*;").find(srcBigString)!!.value
             val srcList = srcLineString.split("'")
 
-            PlayerVideo(srcList[1] + resString[1] + srcList[3], video.attr("poster"))
+            PlayerVideo(
+                src = srcList[1] + resString[1] + srcList[3],
+                preview = video.attr("poster")
+            )
         } catch (e: Exception) {
             Log.e("Grabber", "getPagesWithVideosList parsing: $e")
             null
         }
     }
 
-    fun getVideosLinksFromPage(list: List<String>) = list.mapNotNull { getVideoLinkFromPage(it) }
-    fun getImagesLinksFromPage() = getItemsWeb(0, 1).map { PlayerImage(it.imgLink) }
+    fun getVideosLinksFromPage(list: List<String>) = list.mapNotNull { parseVideoPage(it) }
+    fun getImagesLinksFromPage() = parseMainFromWeb(0, 1).map { PlayerImage(it.imgLink) }
 }
