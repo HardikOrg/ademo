@@ -4,6 +4,7 @@ import com.example.ademo.network.SlusheGrabber
 import com.example.ademo.utils.PlayerImage
 import com.example.ademo.utils.PlayerItem
 import com.example.ademo.utils.PlayerVideo
+import com.example.ademo.utils.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.mapNotNull
@@ -46,6 +47,10 @@ class PlayerDataRepository {
 
     suspend fun getImages() = withContext(Dispatchers.IO) {
         SlusheGrabber.parseMainFromWeb(0, 1).map { PlayerImage(it.imgLink) }
+    }
+
+    suspend fun getVideosFromPrefetched() = withContext(Dispatchers.IO) {
+        Settings.preFetched.map { PlayerVideo(it.first, it.second) }
     }
 
     suspend fun getVideosLinks() = withContext(Dispatchers.IO) {

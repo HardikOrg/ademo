@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import com.example.ademo.repo.PlayerDataRepository
 import com.example.ademo.utils.PlayerItem
 import com.example.ademo.utils.PlayerVideo
+import com.example.ademo.utils.Settings
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,6 +19,7 @@ import java.io.File
 
 class PlayerViewModel : ViewModel() {
     private val repository = PlayerDataRepository()
+
     private var fetchJob: Job? = null
 
     private val _listContent = MutableLiveData<List<PlayerItem>>(listOf())
@@ -64,26 +66,32 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    fun fetchAndSaveData(file: File) {
+    fun fetchAndSaveData(usePrefetched: Boolean, file: File) {
         with(fetchJob) {
             if (this == null || this.isCompleted) {
                 fetchJob = viewModelScope.launch(CoroutineName("PlayerDataFetch")) {
-                    Log.d("PVM", "Trying to fetch")
-                    val list = repository.getVideosLinks()
-                    Log.d("PVM", "Fetch done")
+                    if (usePrefetched) {
+                        val list = repository.getVideosFromPrefetched()
+                        _listContent.value = list
+                    }
 
-                    val flow = repository.getWebDataFlow(list)
+                    if (_listContent.value!!.size <= Settings.prefetchedVerify) {
+                        Log.d("PVM", "Trying to fetch")
+                        val list = repository.getVideosLinks()
+                        Log.d("PVM", "getVideosLinks done")
 
-                    withContext(Dispatchers.IO) {
-                        flow.collect {
-                            Log.d("PVM", "video added: ${it.src}")
+                        val flow = repository.getWebDataFlow(list)
 
-                            withContext(Dispatchers.Main) {
-                                _listContent.value = _listContent.value!! + it
+                        withContext(Dispatchers.IO) {
+                            flow.collect {
+                                Log.d("PVM", "video added: ${it.src}")
+
+                                withContext(Dispatchers.Main) {
+                                    _listContent.value = _listContent.value!! + it
+                                }
                             }
                         }
                     }
-
                     repository.saveToFile(file, _listContent.value!!)
                 }
             }

@@ -22,11 +22,14 @@ class ContentPagerFragment :
                 onClick = viewModel.addClick
             }
 
-        binding.contentRecycler.apply {
+        binding.contentLoadingRecycler.recyclerView.apply {
             layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
             adapter = listAdapter
         }
 
-        viewModel.listContent.observe(viewLifecycleOwner) { listAdapter.setData(it) }
+        viewModel.listContent.observe(viewLifecycleOwner) {
+            binding.contentLoadingRecycler.setLoading(it.isEmpty())
+            listAdapter.setData(it)
+        }
     }
 }

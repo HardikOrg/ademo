@@ -34,6 +34,7 @@ class PlayerMainFragment :
             tab.text = names[position]
         }.attach()
 
+        // Check if current content list is empty (to fetch more data)
         if (sharedViewModel.listContent.value!!.isEmpty()) {
             val file = File(requireContext().filesDir, Settings.fetchedDataFilename)
             if (file.exists()) {
@@ -42,7 +43,7 @@ class PlayerMainFragment :
                 sharedViewModel.getDataFromFile(file)
             } else {
                 Log.d("PlayerMain", "Data file does not exist")
-                sharedViewModel.fetchAndSaveData(file)
+                sharedViewModel.fetchAndSaveData(true, file)
             }
         }
 
