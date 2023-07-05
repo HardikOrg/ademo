@@ -52,7 +52,7 @@
                 android:layout_marginRight="12dp"
                 android:gravity="center"
                 android:maxLines="3"
-                android:text="Name"
+                android:text="Title"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -116,22 +116,24 @@
                 android:id="@+id/detail_block"
                 layout="@layout/slushe_details_block"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
-                app:layout_constraintEnd_toStartOf="@+id/recyclerView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/recyclerView" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginRight="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/position" />
+
+            <com.example.ademo.views.LoadingRecyclerView
+                android:id="@+id/loadingRecyclerView"
+                android:layout_width="0dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/authorImg" />
+                app:layout_constraintTop_toTopOf="@+id/detail_block" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"

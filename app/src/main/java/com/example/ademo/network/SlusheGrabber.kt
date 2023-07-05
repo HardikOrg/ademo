@@ -107,7 +107,7 @@ object SlusheGrabber {
                 title = contentDetails.select("h1").text(),
                 authorName = authorBox.select("h1").text(),
                 authorPosition = authorBox.select("p").text(),
-                tags = document.getElementsByClass("tags-list").map { it.text() },
+                tags = document.getElementsByClass("tags-list").select("a").map { it.text() },
                 stats = stats
             )
         } catch (e: Exception) {

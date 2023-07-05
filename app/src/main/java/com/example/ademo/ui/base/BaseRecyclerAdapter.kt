@@ -53,7 +53,7 @@ open class BaseRecyclerAdapter<DataType : Any, VB : ViewBinding>(
     }
 
     fun clearData() {
-        dataList = mutableListOf()
+        dataList = listOf()
         notifyDataSetChanged()
     }
 }

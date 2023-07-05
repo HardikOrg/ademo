@@ -11,7 +11,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.example.ademo.R
 import com.example.ademo.databinding.FragmentSlusheListBinding
-import com.example.ademo.databinding.ImageItemBinding
+import com.example.ademo.databinding.RvImageItemBinding
 import com.example.ademo.ui.MainActivity
 import com.example.ademo.ui.base.BaseFragment
 import com.example.ademo.ui.base.BaseRecyclerAdapter
@@ -28,7 +28,7 @@ class SlusheListFragment :
 
         val sortList = requireContext().resources.getStringArray(R.array.sort_types)
 
-        binding.recylerView.apply {
+        binding.loadingRecyclerView.recyclerView.apply {
             layoutManager = GridLayoutManager(view.context, Settings.recyclerGridWidth)
             adapter = SlusheGalleryAdapter().apply {
                 onClick = { item: PageItem, _ ->
@@ -57,8 +57,9 @@ class SlusheListFragment :
             binding.toolbar.title = sortList[it]
         }
 
-        viewModel.currentList.observe(viewLifecycleOwner) {
-            (binding.recylerView.adapter as SlusheGalleryAdapter).setData(it)
+        viewModel.currentList.observe(viewLifecycleOwner) { list ->
+            binding.loadingRecyclerView.setLoading(list.isEmpty())
+            (binding.loadingRecyclerView.recyclerView.adapter as SlusheGalleryAdapter).setData(list)
         }
 
         binding.toolbar.apply {
@@ -76,15 +77,15 @@ class SlusheListFragment :
     }
 
     inner class SlusheGalleryAdapter :
-        BaseRecyclerAdapter<PageItem, ImageItemBinding>(ImageItemBinding::inflate) {
-        override fun bind(binding: ImageItemBinding, item: PageItem, id: Int) {
+        BaseRecyclerAdapter<PageItem, RvImageItemBinding>(RvImageItemBinding::inflate) {
+        override fun bind(binding: RvImageItemBinding, item: PageItem, id: Int) {
             // onClick
             super.bind(binding, item, id)
 
             binding.text.text = item.title
 
             val placeholder = CircularProgressDrawable(binding.root.context).apply {
-                setColorSchemeColors(binding.root.context.resources.getColor(R.color.s_pink))
+                setColorSchemeColors(ContextCompat.getColor(binding.root.context, R.color.s_pink))
                 strokeWidth = 5f
                 centerRadius = 30f
                 start()
