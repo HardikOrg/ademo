@@ -22,7 +22,7 @@ I use **Jsoup** for HTML parsing and fetching + **okhttp3** for building HTTP re
 
 > The full source code of the application is inside this repository. Apk file can also be downloaded from the _**Releases**_ tab
 
-[![stable release](https://img.shields.io/github/release/HardikOrg/ademo.svg?maxAge=3600&label=download)](https://github.com/HardikOrg/ademo/releases/latest)
+[![release](https://img.shields.io/github/release/HardikOrg/ademo.svg)](https://github.com/HardikOrg/ademo/releases/latest)
 
 ## Slushe Viewer
 
